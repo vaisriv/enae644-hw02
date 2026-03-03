@@ -1,4 +1,4 @@
-module Graphs
+module AStar
   ( Graph (..),
     Node (..),
     Edge (..),

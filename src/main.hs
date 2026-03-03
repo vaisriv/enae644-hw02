@@ -1,6 +1,6 @@
 module Main where
 
-import qualified Graphs (AStarResult (..), Graph, Node (..), astar, printGraph, readGraph)
+import qualified AStar (AStarResult (..), Graph, Node (..), astar, printGraph, readGraph)
 import System.Directory (createDirectoryIfMissing)
 import qualified System.Environment
 import qualified System.Exit
@@ -19,15 +19,15 @@ data Args = Args
 main :: IO ()
 main = do
   args <- System.Environment.getArgs >>= parse
-  graph <- Graphs.readGraph (inputPath args) (weighted args)
-  Graphs.printGraph graph
+  graph <- AStar.readGraph (inputPath args) (weighted args)
+  AStar.printGraph graph
   putStrLn ""
   putStrLn $
     "Searching from node "
       ++ show (startID args)
       ++ " to node "
       ++ show (goalID args)
-  let (result, treeEdges) = Graphs.astar graph (startID args) (goalID args)
+  let (result, treeEdges) = AStar.astar graph (startID args) (goalID args)
   createDirectoryIfMissing True (outputPath args)
   writeSearchTree (outputPath args </> "search_tree.csv") treeEdges
   case result of
@@ -37,40 +37,40 @@ main = do
     Just r -> do
       let cost = pathCost r
       putStrLn $ "Path found (cost: " ++ show cost ++ "):"
-      putStrLn $ "  " ++ unwords (map (show . Graphs.nodeID) (Graphs.pathNodes r))
-      writePathCSV (outputPath args </> "output_path.csv") (Graphs.pathNodes r)
+      putStrLn $ "  " ++ unwords (map (show . AStar.nodeID) (AStar.pathNodes r))
+      writePathCSV (outputPath args </> "output_path.csv") (AStar.pathNodes r)
       putStrLn $ "Results written to " ++ outputPath args
 
 -- sum edge weights along the path
-pathCost :: Graphs.AStarResult -> Float
+pathCost :: AStar.AStarResult -> Float
 pathCost result =
-  let ns = reverse (Graphs.pathNodes result) -- start -> goal order
+  let ns = reverse (AStar.pathNodes result) -- start -> goal order
       pairs = zip ns (tail ns)
    in sum [dist a b | (a, b) <- pairs]
   where
     dist a b =
-      let dx = Graphs.xCoord a - Graphs.xCoord b
-          dy = Graphs.yCoord a - Graphs.yCoord b
+      let dx = AStar.xCoord a - AStar.xCoord b
+          dy = AStar.yCoord a - AStar.yCoord b
        in sqrt (dx * dx + dy * dy)
 
 -- CSV output
-nodeRow :: Graphs.Node -> String
+nodeRow :: AStar.Node -> String
 nodeRow n =
-  show (Graphs.nodeID n)
+  show (AStar.nodeID n)
     ++ ", "
-    ++ show (Graphs.xCoord n)
+    ++ show (AStar.xCoord n)
     ++ ", "
-    ++ show (Graphs.yCoord n)
+    ++ show (AStar.yCoord n)
 
 -- output_path.csv: goal at top, start at bottom
-writePathCSV :: FilePath -> [Graphs.Node] -> IO ()
+writePathCSV :: FilePath -> [AStar.Node] -> IO ()
 writePathCSV fp ns = do
   let header = "nodeID, x_location, y_location"
       rows = map nodeRow ns
   writeFile fp (unlines (header : rows))
 
 -- search_tree.csv: one row per relaxed edge
-writeSearchTree :: FilePath -> [(Graphs.Node, Graphs.Node)] -> IO ()
+writeSearchTree :: FilePath -> [(AStar.Node, AStar.Node)] -> IO ()
 writeSearchTree fp edges = do
   let header = "nodeID, x_location, y_location, parentID, parent_x_location, parent_y_location"
       rows = map edgeRow edges
@@ -81,7 +81,7 @@ writeSearchTree fp edges = do
 
 -- CLI parsing
 -- flags may appear in any order
--- ./enae644-hw01 -i <inputPath> -o <outputPath> -s <start> -g <goal> [-w]
+-- ./enae644-hw02 -i <inputPath> -o <outputPath> -s <start> -g <goal> [-w]
 parse :: [String] -> IO Args
 parse argv = case argv of
   ["-h"] -> usage >> exit >> return dummy
@@ -115,10 +115,10 @@ validate args
 
 -- flag outputs
 usage :: IO ()
-usage = putStrLn "Usage: enae644-hw01 -i <inputPath> -o <outputPath> -s <startID> -g <goalID> [-w]"
+usage = putStrLn "Usage: enae644-hw02 -i <inputPath> -o <outputPath> -s <startID> -g <goalID> [-w]"
 
 version :: IO ()
-version = putStrLn "Haskell enae644-hw01 0.1"
+version = putStrLn "Haskell enae644-hw02 0.1"
 
 exit :: IO ()
 exit = System.Exit.exitWith System.Exit.ExitSuccess
