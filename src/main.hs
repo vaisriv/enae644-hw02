@@ -2,16 +2,16 @@ module Main where
 
 import GHC.Generics
 import qualified Graphs
-  ( Graph (..),
+  ( Edge (..),
+    Graph (..),
     Node (..),
-    Edge (..),
     printGraph,
   )
 import qualified RRT
   ( Workspace (..),
-    -- Obstacle (..),
-    -- Problem (..),
-    -- rrt,
+  -- Obstacle (..),
+  -- Problem (..),
+  -- rrt,
   )
 import qualified System.Environment
 import qualified System.Exit
