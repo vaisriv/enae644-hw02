@@ -33,7 +33,7 @@ main = do
   putStrLn "foobar"
 
 -- CLI parsing
--- ./enae644-hw02 [INPUTDIR] [OUTPUTDIR] [PROBLEMNUM]
+-- ./rrtSearch [INPUTDIR] [OUTPUTDIR] [PROBLEMNUM]
 parse :: [String] -> IO Args
 parse argv = case argv of
   ["-h"] -> usage >> exit >> return dummy
@@ -47,7 +47,7 @@ parse argv = case argv of
 -- info flags
 usage :: IO ()
 usage = do
-  putStrLn "Usage: enae644-hw02 [INPUTDIR] [OUTPUTDIR] [PROBLEMNUM]"
+  putStrLn "Usage: rrtSearch [INPUTDIR] [OUTPUTDIR] [PROBLEMNUM]"
   putStrLn ""
   putStrLn "Arguments:"
   putStrLn "  INPUTDIR"
